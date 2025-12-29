@@ -181,6 +181,8 @@ MicroBlaze is used for **high-level control and visualization state**, while all
 ---
 
 ## Authors
-Alen Mathew Daniel
-Ayush Jain  
+`Alen Mathew Daniel`
+
+`Ayush Jain`
+
 ECE 385 – University of Illinois Urbana-Champaign
