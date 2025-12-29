@@ -71,28 +71,38 @@ This produces metallic, tremolo-like textures by introducing sum and difference 
 ---
 
 ### Distortion
-**Integrated in:** `simple_synth.sv`
+**File:** `mb_distortion.sv`
 
-Applies **non-linear clipping** to the waveform by limiting the signal beyond a fixed threshold.  
-This introduces higher-order harmonics, producing a saturated and aggressive sound similar to analog distortion.
+Implements a **hardware distortion effect** using amplitude boosting followed by hard clipping.  
+The input PCM signal is first sign-extended and amplified, then limited to a fixed threshold to introduce non-linear distortion.
 
-**Key features:**
-- Threshold-based hard clipping
-- Deterministic hardware behavior
-- Can be layered with other effects
+**Implementation details:**
+- The 16-bit signed PCM input is sign-extended to 32 bits and amplified via a left shift.
+- A fixed clipping threshold (`LIMIT`) bounds the signal to prevent overflow.
+- When enabled, samples exceeding the threshold are clipped; otherwise, the signal passes through unchanged.
+
+**Effect characteristics:**
+- Produces higher-order harmonics via hard clipping
+- Deterministic, real-time hardware behavior
+- Enable-controlled bypass for clean routing
 
 ---
 
 ### Bit-Crushing
-**Integrated in:** `simple_synth.sv`
+**File:** `mb_bitcrush.sv`
 
-Reduces effective **bit depth** by truncating lower-significance bits of the PCM signal.  
-This introduces quantization noise and a characteristic “lo-fi” digital texture.
+Implements a **bit-crushing effect** by reducing the effective bit depth of the PCM signal.  
+This is achieved by masking out the lower significance bits, intentionally introducing quantization noise.
 
-**Key features:**
-- Configurable bit-depth reduction
-- Low hardware overhead
-- Stackable with modulation and distortion
+**Implementation details:**
+- When enabled, the lower 12 bits of the 16-bit PCM signal are cleared.
+- Only the upper 4 bits are preserved, significantly reducing resolution.
+- When disabled, the signal bypasses the effect unchanged.
+
+**Effect characteristics:**
+- Produces a lo-fi, digitized sound texture
+- Very low hardware cost
+- Fully combinational and latency-free
 
 ---
 
