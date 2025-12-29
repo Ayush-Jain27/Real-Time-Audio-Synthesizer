@@ -13,6 +13,27 @@ The design prioritizes **deterministic timing**, **modular SystemVerilog design*
 
 ## High-Level Architecture
 
+The design has three main paths that run in parallel:
+
+1. **Audio capture + playback (real-time path)**
+   - `mb_pdm_to_pcm.sv` converts the microphone’s PDM stream into PCM samples.
+   - Audio can be routed through the effects chain and/or recorded/playbacked using BRAM via `mb_audio_looper.sv`.
+   - `mb_pcm_to_pwm.sv` converts final PCM audio into PWM for speaker output.
+
+2. **Effects processing (real-time hardware)**
+   - Core effect routing lives in `simple_synth.sv`.
+   - Ring modulation is implemented in `ring_modulator.sv`.
+   - Bit-crushing and distortion are applied in the effects path (bit-depth reduction + clipping) and can be layered with modulation.
+
+3. **HDMI visualization (separate video path)**
+   - `mb_audio_visualizer_top.sv` drives the visualizer output.
+   - `VGA_controller.sv` generates timing + pixel coordinates.
+   - `Color_Mapper.sv` maps audio metrics/effect state to on-screen bars/graphics.
+   - `mb_font_rom.sv` provides font bitmaps for text overlays (effect labels, status, etc.).
+
+MicroBlaze is used for **high-level control and UI state** (what effect is enabled, what the overlay shows), while the audio datapath stays hardware-timed to avoid glitches.
+
+
 
 ---
 
